@@ -6,7 +6,13 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-
+　　"""Load dataframe from filepaths
+    INPUT
+    messages_filepath - str, link to file
+    categories_filepath - str, link to file
+    OUTPUT
+    df - pandas DataFrame
+    """
     messages_filepath = 'disaster_messages.csv'
     categories_filepath = 'disaster_categories.csv'
     messages = pd.read_csv(messages_filepath)
