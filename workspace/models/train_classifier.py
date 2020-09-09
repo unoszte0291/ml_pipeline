@@ -33,6 +33,21 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def load_data(database_filepath):
+     '''
+    Load data, transform DataFrame, get X, Y and name of feature columns for score results
+    
+    INPUT:
+    engine - create data base
+    df - read a table of engine
+    
+    OUTPUT:
+    X - an array with columns messages from df
+    Y - a new dataframe that has the following characteristics:
+            1. has all comns except for 'id', 'message', 'original', and 'genre'.
+            2. has a column 'related' cleaned from values 2.
+    category_names - a list of columns names in Y.    
+    '''
+    
     # load data from database
     engine = create_engine('sqlite:///'+ database_filepath)
     engine.table_names()
@@ -45,6 +60,20 @@ def load_data(database_filepath):
     return X, Y,category_names
 
 def tokenize(text):
+    '''
+    Clean, normalize, tokenize, lemmatize a text
+    
+    INPUT:
+    text - a string, in this case messages
+    
+    OUTPUT:
+    clean_tokens - an array with a text that has the following characteristics:
+            1. has no punctuation marks
+            2. splited into sequence of words
+            3. cleaned from stopwords
+            4. lemmatized
+            5. all letters are in low case
+    '''
     # Normalize text
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
@@ -53,9 +82,6 @@ def tokenize(text):
     #tokenize
     words = word_tokenize (text)
     
-    #stemming
-    stemmed = [PorterStemmer().stem(w) for w in words]
-    
     #lemmatizing
     words_lemmed = [WordNetLemmatizer().lemmatize(w) for w in stemmed if w not in stop_words]
    
@@ -63,6 +89,15 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    Create a pipeline and parameters for a grid search model
+    
+    OUTPUT:
+    cv - model that:
+            1. defines an improved pipeline 
+            2. sets parameters for estimators
+            3. defins a grid search model with the pipeline and parameters
+    '''
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -80,15 +115,21 @@ def build_model():
 model = build_model()
 
 def evaluate_model(Y_test, Y_pred):
-     Y_pred = pipeline.predict(X_test)
+    '''
+    Create a pipeline and parameters for a grid search model
+    
+    OUTPUT:
+    cv - model that:
+            1. defines an improved pipeline 
+            2. sets parameters for estimators
+            3. defins a grid search model with the pipeline and parameters
+    '''
+      test_pred = model.predict(X_test) 
 
-     labels = np.unique(Y_pred)
-     confusion_mat = confusion_matrix(Y_test.values.argmax(axis=1), Y_pred.argmax(axis=1),labels=labels)
-     accuracy = (Y_pred == Y_test).mean()
-
-     print("Labels:", labels)
-     print("Confusion Matrix:\n", confusion_mat)
-     print("Accuracy:", accuracy)
+    for i in range(len(category_names)): 
+        print(category_names[i]) 
+        print(classification_report(Y_test[category_names[i]], test_pred[:, i]))
+     
 
 def save_model(model, model_filepath):
 
