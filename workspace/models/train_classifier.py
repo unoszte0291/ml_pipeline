@@ -74,18 +74,25 @@ def tokenize(text):
             4. lemmatized
             5. all letters are in low case
     '''
-    # Normalize text
+    #normalize
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
-    stop_words = stopwords.words("english")
-    
     #tokenize
-    words = word_tokenize (text)
+    tokens = word_tokenize(text)
     
-    #lemmatizing
-    words_lemmed = [WordNetLemmatizer().lemmatize(w) for w in stemmed if w not in stop_words]
-   
-    return words_lemmed
+    #stop_words
+    my_stopwords=stopwords.words('english')
+    tokens = [word for word in tokens if word not in my_stopwords]
+    
+    #lemmatization
+    lemmatizer = WordNetLemmatizer()
+
+    clean_tokens = []
+    for tok in tokens:
+        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tokens.append(clean_tok)
+
+    return clean_tokens
 
 
 def build_model():
