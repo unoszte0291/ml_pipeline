@@ -33,21 +33,6 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def load_data(database_filepath):
-     '''
-    Load data, transform DataFrame, get X, Y and name of feature columns for score results
-    
-    INPUT:
-    engine - create data base
-    df - read a table of engine
-    
-    OUTPUT:
-    X - an array with columns messages from df
-    Y - a new dataframe that has the following characteristics:
-            1. has all comns except for 'id', 'message', 'original', and 'genre'.
-            2. has a column 'related' cleaned from values 2.
-    category_names - a list of columns names in Y.    
-    '''
-    
     # load data from database
     engine = create_engine('sqlite:///'+ database_filepath)
     engine.table_names()
@@ -60,51 +45,30 @@ def load_data(database_filepath):
     return X, Y,category_names
 
 def tokenize(text):
-    '''
-    Clean, normalize, tokenize, lemmatize a text
+    """
+    Tokenize message data
+    Parameters:
+    text: string
     
-    INPUT:
-    text - a string, in this case messages
+    Returns:
+    clean_tokens: List of tokens
+    """
     
-    OUTPUT:
-    clean_tokens - an array with a text that has the following characteristics:
-            1. has no punctuation marks
-            2. splited into sequence of words
-            3. cleaned from stopwords
-            4. lemmatized
-            5. all letters are in low case
-    '''
-    #normalize
-    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
-    
-    #tokenize
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    detected_urls = re.findall(url_regex, text)
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
     tokens = word_tokenize(text)
-    
-    #stop_words
-    my_stopwords=stopwords.words('english')
-    tokens = [word for word in tokens if word not in my_stopwords]
-    
-    #lemmatization
     lemmatizer = WordNetLemmatizer()
-
+    
     clean_tokens = []
     for tok in tokens:
         clean_tok = lemmatizer.lemmatize(tok).lower().strip()
         clean_tokens.append(clean_tok)
-
     return clean_tokens
 
 
 def build_model():
-    '''
-    Create a pipeline and parameters for a grid search model
-    
-    OUTPUT:
-    cv - model that:
-            1. defines an improved pipeline 
-            2. sets parameters for estimators
-            3. defins a grid search model with the pipeline and parameters
-    '''
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -122,25 +86,15 @@ def build_model():
 model = build_model()
 
 def evaluate_model(Y_test, Y_pred):
-    '''
-    Create a pipeline and parameters for a grid search model
-    
-    OUTPUT:
-    cv - model that:
-            1. defines an improved pipeline 
-            2. sets parameters for estimators
-            3. defins a grid search model with the pipeline and parameters
-    '''
-      test_pred = model.predict(X_test) 
+   test_pred = model.predict(X_test) 
 
-    for i in range(len(category_names)): 
+   for i in range(len(category_names)): 
         print(category_names[i]) 
         print(classification_report(Y_test[category_names[i]], test_pred[:, i]))
-     
 
 def save_model(model, model_filepath):
 
-    pickle.dump(model, open('classifier.pkl', 'wb'))
+    pickle.dump(model, open('./classifier.pkl', 'wb'))
 
 
 
