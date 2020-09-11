@@ -12,27 +12,27 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
-    #split the categories and create a dataframe of individual categories columns
-    categories_df = df['categories'].str.split(pat=';', expand=True)
-    #select the first row of the categories dataframe
-    row = categories_df.iloc[0]
-    #use the row to extract a list of new column names for categories.
-    category_colnames = row.apply(lambda x:x[:-2])
-    # rename the columns of `categories`
-    categories_df.columns = category_colnames 
-    for column in categories_df:
-       categories_df[column] = categories_df[column].apply(lambda x:x[-1:])        
-       categories_df[column] = categories_df[column].astype(int)
-       categories_df.drop(categories_df.index[categories_df.related == 2], inplace=True) 
-    # drop the original categories column from `df`
-       df.drop('categories', axis=1, inplace=True)
-    # concatenate the original dataframe with the new `categories` dataframe
-       df = pd.concat([df, categories_df], axis=1)
-    # drop duplicates
-       df.drop_duplicates(inplace=True)
-       df = df.fillna(0)
-   
-       return df
+    """
+    Clean Data function
+    
+    Arguments:
+        df -> raw data Pandas DataFrame
+    Outputs:
+        df -> clean data Pandas DataFrame
+    """
+    categories = df.categories.str.split(pat=';',expand=True)
+    firstrow = categories.iloc[0,:]
+    category_colnames = firstrow.apply(lambda x:x[:-2])
+    categories.columns = category_colnames
+    for column in categories:
+        categories[column] = categories[column].str[-1]
+        categories[column] = categories[column].astype(np.int)
+    df = df.drop('categories',axis=1)
+    df = pd.concat([df,categories],axis=1)
+    #df = pd.concat([df,pd.get_dummies(df.genre)],axis=1)
+    #df = df.drop(['genre','social'],axis=1) 
+    df = df.drop_duplicates()
+    return df
 
 def save_data(df, database_filename):
     database_filename = './DisasterResponse.db'

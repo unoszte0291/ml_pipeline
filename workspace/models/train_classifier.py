@@ -74,7 +74,7 @@ def build_model():
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(estimator=RandomForestClassifier()))
     ])
-    # Improved parameters 
+# Improved parameters 
     parameters = {
         'clf__estimator__n_estimators': [100, 200]
     }
