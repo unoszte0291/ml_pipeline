@@ -72,14 +72,14 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(estimator=RandomForestClassifier()))
+        ('clf', MultiOutputClassifier(estimator=AdaBoostClassifier()))
     ])
 # Improved parameters 
     parameters = {
-        'clf__estimator__n_estimators': [100, 200]
+        'clf__estimator__n_estimators': [10]
     }
     # new model with improved parameters
-    cv = GridSearchCV(estimator=pipeline, param_grid=parameters, cv=3)
+    cv = GridSearchCV(estimator=pipeline, param_grid=parameters, cv=None, verbose=12, n_jobs=-1)
     return cv
 
 def evaluate_model(Y_test, Y_pred):
