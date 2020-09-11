@@ -6,17 +6,10 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-
-    messages_filepath = './disaster_messages.csv'
-    categories_filepath = './disaster_categories.csv'
     messages = pd.read_csv(messages_filepath)
     categories_df = pd.read_csv(categories_filepath)
     df = messages.merge(categories_df, how='left',on=['id'])
     return df
-
-categories_filepath = './disaster_categories.csv'
-categories_df = pd.read_csv(categories_filepath)
-categories_df = categories_df.categories.str.split(';', expand=True)
 
 def clean_data(df):
     #split the categories and create a dataframe of individual categories columns

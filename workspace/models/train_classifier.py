@@ -76,14 +76,11 @@ def build_model():
     ])
     # Improved parameters 
     parameters = {
-        'clf__estimator__n_estimators': [100, 200],
-        'clf__estimator__learning_rate': [0.1, 0.3]
+        'clf__estimator__n_estimators': [100, 200]
     }
     # new model with improved parameters
     cv = GridSearchCV(estimator=pipeline, param_grid=parameters, cv=3)
     return cv
-
-model = build_model()
 
 def evaluate_model(Y_test, Y_pred):
    test_pred = model.predict(X_test) 

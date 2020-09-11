@@ -17,7 +17,6 @@ ETL Pipeline Preparation.ipynb: The code and analysis contained in this Jupyter 
 <br>
 ML Pipeline Preparation.ipynb: The code and analysis contained in this Jupyter notebook was used in the development of train_classifier.py. In particular, it contains the analysis used to tune the ML model and determine which algorithm to use. train_classifier.py effectively automates the model fitting process contained in this notebook.<br>
 data: This folder contains sample messages and categories datasets in csv format.<br>
-app: This folder contains all of the files necessary to run and render the web app.<br>
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
@@ -34,7 +33,3 @@ app: This folder contains all of the files necessary to run and render the web a
 
 Licensing, Authors, and Acknowledgements<br>
 This app was completed as part of the Udacity Data Scientist Nanodegree. Code templates and data were provided by Udacity.<br>
-
-
-
-
