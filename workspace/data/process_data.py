@@ -24,6 +24,7 @@ def clean_data(df):
     firstrow = categories.iloc[0,:]
     category_colnames = firstrow.apply(lambda x:x[:-2])
     categories.columns = category_colnames
+    categories.drop(categories.index[categories.related == 2], inplace=True)
     for column in categories:
         categories[column] = categories[column].str[-1]
         categories[column] = categories[column].astype(np.int)
