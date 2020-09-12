@@ -33,6 +33,16 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def load_data(database_filepath):
+    """
+    Load Data Function
+    
+    Arguments:
+        database_filepath -> path to SQLite db
+    Output:
+        X -> feature DataFrame
+        Y -> label DataFrame
+        category_names -> used for data visualization (app)
+    """    
     # load data from database
     engine = create_engine('sqlite:///'+ database_filepath)
     engine.table_names()
@@ -69,6 +79,12 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Build Model function
+    
+    This function output is a Scikit ML Pipeline that process text messages
+    according to NLP best-practice and apply a classifier.
+    """    
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -82,7 +98,19 @@ def build_model():
     cv = GridSearchCV(estimator=pipeline, param_grid=parameters, cv=None, verbose=12, n_jobs=-1)
     return cv
 
-def evaluate_model(Y_test, Y_pred):
+def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Evaluate Model function
+    
+    This function applies ML pipeline to a test set and prints out
+    model performance (accuracy and f1score)
+    
+    Arguments:
+        model -> Scikit ML Pipeline
+        X_test -> test features
+        Y_test -> test labels
+        category_names -> label names (multi-output)
+    """
    test_pred = model.predict(X_test) 
 
    for i in range(len(category_names)): 
@@ -90,12 +118,32 @@ def evaluate_model(Y_test, Y_pred):
         print(classification_report(Y_test[category_names[i]], test_pred[:, i]))
 
 def save_model(model, model_filepath):
+    """
+    Save Model function
+    
+    This function saves trained model as Pickle file, to be loaded later.
+    
+    Arguments:
+        model -> GridSearchCV or Scikit Pipelin object
+        model_filepath -> destination path to save .pkl file
+    
+    """
 
     pickle.dump(model, open('./classifier.pkl', 'wb'))
 
 
 
 def main():
+    """
+    Train Classifier Main function
+    
+    This function applies the Machine Learning Pipeline:
+        1) Extract data from SQLite db
+        2) Train ML model on training set
+        3) Estimate model performance on test set
+        4) Save trained model as Pickle
+    
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
